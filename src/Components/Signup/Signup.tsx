@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { motion } from "motion/react";
 import { FiEye, FiEyeOff } from "react-icons/fi"; // Added React Icons for Eye Icon
 import "./Signup.css";
+import { BASE_URL } from "../../utils/constants";
+import { useNavigate } from "react-router";
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -13,19 +15,49 @@ const Signup = () => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
+
     if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match!");
+      setError("Passwords do not match!");
       return;
     }
-    console.log("Signup Data:", formData);
+
+    try {
+      const response = await fetch(`${BASE_URL}/signup`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          emailId: formData.emailId,
+          password: formData.password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Something went wrong! Please try again.");
+      }
+
+      console.log("Signup Successful:", data);
+      alert("Registration Successful! Please login.");
+      navigate("/login");
+    } catch (err: any) {
+      setError(err.message);
+    }
   };
 
   return (
@@ -35,6 +67,16 @@ const Signup = () => {
           <h1 className="signup-title">Sign Up</h1>
           <p className="signup-subtitle">Create your new account</p>
         </div>
+
+        {error && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="error-message"
+          >
+            {error}
+          </motion.div>
+        )}
 
         <div className="form-row">
           <div className="form-group flex-1">
@@ -94,7 +136,7 @@ const Signup = () => {
               className="eye-icon-btn"
               onClick={() => setShowPassword(!showPassword)}
             >
-              {showPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
+              {showPassword ? <FiEye size={20} /> : <FiEyeOff size={20} />}
             </button>
           </div>
         </div>
@@ -116,7 +158,7 @@ const Signup = () => {
               className="eye-icon-btn"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
             >
-              {showConfirmPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
+              {showConfirmPassword ? <FiEye size={20} /> : <FiEyeOff size={20} />}
             </button>
           </div>
         </div>

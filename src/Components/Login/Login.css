@@ -32,6 +32,16 @@
   margin-top: 8px;
 }
 
+.error-message {
+  background-color: rgba(255, 68, 68, 0.1);
+  color: #ff4444;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  text-align: center;
+  border: 1px solid rgba(255, 68, 68, 0.2);
+}
+
 .form-group {
   display: flex;
   flex-direction: column;
@@ -39,7 +49,7 @@
 }
 
 .form-label {
-  font-size:0.9rem;
+  font-size: 0.9rem;
   color: #ccc;
   font-weight: 500;
 }
@@ -52,7 +62,9 @@
   color: #fff;
   font-size: 1rem;
   outline: none;
-  transition: border-color 0.2s, background-color 0.2s;
+  transition:
+    border-color 0.2s,
+    background-color 0.2s;
 }
 
 .form-input:focus {
@@ -71,4 +83,30 @@
   font-weight: 600;
   cursor: pointer;
   box-shadow: 0 4px 14px 0 rgba(255, 255, 255, 0.1);
+}
+.password-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.password-input {
+  padding-right: 45px; /* Leave space for eye icon */
+}
+
+.eye-icon-btn {
+  position: absolute;
+  right: 12px;
+  background: transparent;
+  border: none;
+  color: #888;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: color 0.2s;
+}
+
+.eye-icon-btn:hover {
+  color: #ccc;
 }
