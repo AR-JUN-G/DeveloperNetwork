@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { motion } from "motion/react";
 import { FiEye, FiEyeOff } from "react-icons/fi"; // Added React Icons for Eye Icon
 import "./Signup.css";
-import { BASE_URL } from "../../utils/constants";
 import { useNavigate } from "react-router";
+import { SignupAPI } from "../../API/AuthAPI";
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -33,30 +33,18 @@ const Signup = () => {
     }
 
     try {
-      const response = await fetch(`${BASE_URL}/signup`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          emailId: formData.emailId,
-          password: formData.password,
-        }),
+      const response = await SignupAPI({
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        emailId: formData.emailId,
+        password: formData.password,
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Something went wrong! Please try again.");
-      }
-
-      console.log("Signup Successful:", data);
-      alert("Registration Successful! Please login.");
+      console.log("Signup Successful:", response);
+      alert(response.message || "Registration Successful!");
       navigate("/login");
     } catch (err: any) {
-      setError(err.message);
+      setError(err?.message || "Something went wrong! Please try again.");
     }
   };
 
@@ -158,7 +146,7 @@ const Signup = () => {
               className="eye-icon-btn"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
             >
-              {showConfirmPassword ? <FiEye size={20} /> : <FiEyeOff size={20} />}
+              {showConfirmPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
             </button>
           </div>
         </div>

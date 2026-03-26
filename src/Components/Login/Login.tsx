@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import { motion } from "motion/react";
 import "./Login.css";
 import { useNavigate } from "react-router";
-import { BASE_URL } from "../../utils/constants";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { useDispatch } from "react-redux";
 import { updateUserDetails } from "../../Store/userSlice";
+import { LoginAPI } from "../../API/AuthAPI";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -20,31 +20,14 @@ const Login = () => {
     setError("");
 
     try {
-      const response = await fetch(`${BASE_URL}/login`, {
-        credentials: 'include',
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          emailId: email,
-          password: password,
-        }),
-      });
+      const response = await LoginAPI({ emailId: email, password });
 
-      const data = await response.json();
-      dispatch(updateUserDetails(data));
-      if (!response.ok) {
-        throw new Error(
-          data.message || "Invalid credentials! Please try again.",
-        );
-      }
+      dispatch(updateUserDetails(response));
+      console.log("Login Successful:", response);
+      navigate("/home");
 
-      console.log("Login Successful:", data);
-
-      navigate("/home"); // Navigate to home or dashboard
     } catch (err: any) {
-      setError(err.message);
+      setError(err?.message || "Invalid credentials! Please try again.");
     }
   };
 
