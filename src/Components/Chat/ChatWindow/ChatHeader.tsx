@@ -11,9 +11,9 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ name = "Chat User", online = fa
     return (
         <header className="chat-header-container">
             <div className="header-user-info">
-                <img 
-                    src={avatar || `https://ui-avatars.com/api/?name=${name}&background=6366f1&color=fff`} 
-                    alt={name} 
+                <img
+                    src={avatar || `https://ui-avatars.com/api/?name=${name}&background=6366f1&color=fff`}
+                    alt={name}
                     className="header-avatar"
                 />
                 <div>
@@ -22,9 +22,9 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ name = "Chat User", online = fa
                 </div>
             </div>
             <div className="header-actions">
-                <button className="action-btn"><FiPhone size={20} /></button>
+                {/* <button className="action-btn"><FiPhone size={20} /></button>
                 <button className="action-btn"><FiVideo size={20} /></button>
-                <button className="action-btn"><FiInfo size={20} /></button>
+                <button className="action-btn"><FiInfo size={20} /></button> */}
                 <button className="action-btn"><FiMoreVertical size={20} /></button>
             </div>
         </header>

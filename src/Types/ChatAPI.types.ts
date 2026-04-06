@@ -39,4 +39,4 @@ type directMessageListResponseType = {
     }
 }
 
-export type { directChatResponseType, directChatListResponseType, availableMembersForChatResponseType, directMessageListResponseType, directMessageReponseType };
+export type { directChatResponseType, directChatListResponseType, availableMembersForChatResponseType, directMessageListResponseType, directMessageReponseType, availableMemberResponseType };

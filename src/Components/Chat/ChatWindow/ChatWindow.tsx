@@ -10,14 +10,19 @@ import { APIResponseType } from "../../../Types/CommonAPIResponse.types";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../Store/store";
 import formatChatTime from "../../../utils/FormatDate";
+import { availableMemberResponseType, directChatResponseType } from "../../../Types/ChatAPI.types";
 
-const ChatWindow = ({ socket, toUserID }: { socket: Socket, toUserID: string }) => {
+const ChatWindow = ({ socket, toUserID, selectedUser }: { socket: Socket, toUserID: string, selectedUser?: directChatResponseType | availableMemberResponseType }) => {
     const [input, setInput] = useState("");
     const [page, setPage] = useState<number>(1);
     const [hasMore, setHasMore] = useState<Boolean>(true);
     const [messages, setMessages] = useState<directMessageReponseType[]>([]);
     const user = useSelector((state: RootState) => state.User);
     const scrollRef = useRef<HTMLDivElement>(null);
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+    const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+    const commonEmojis = ["😊", "😂", "🥰", "😍", "🥳", "😎", "🤔", "😢", "🔥", "👍", "🙌", "💯", "✨", "❤️", "🎈", "🎉"];
 
     const scrollToBottom = () => {
         if (scrollRef.current) {
@@ -102,10 +107,8 @@ const ChatWindow = ({ socket, toUserID }: { socket: Socket, toUserID: string }) 
             text: input.trim()
         };
 
-        // Emit the message to the backend
         socket.emit("sendMessage", messageData);
 
-        // Optimistically update the UI
         const newMessage: directMessageReponseType = {
             _id: Date.now().toString(), // Temporary ID
             senderId: user.userID || "",
@@ -115,14 +118,34 @@ const ChatWindow = ({ socket, toUserID }: { socket: Socket, toUserID: string }) 
 
         setMessages(prev => [...prev, newMessage]);
         setInput("");
+        setShowEmojiPicker(false);
 
         // Ensure we scroll to bottom after state update
         setTimeout(scrollToBottom, 0);
     };
 
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            handleSend();
+        }
+    };
+
+    const insertEmoji = (emoji: string) => {
+        const cursor = textareaRef.current?.selectionStart || 0;
+        const text = input.slice(0, cursor) + emoji + input.slice(cursor);
+        setInput(text);
+        setShowEmojiPicker(false);
+        textareaRef.current?.focus();
+    };
+
     return (
         <div className="chat-window">
-            <ChatHeader />
+            <ChatHeader
+                name={selectedUser ? `${selectedUser.firstName} ${selectedUser.lastName}` : "Chat User"}
+                avatar={selectedUser?.photourl}
+                online={false} // Implementing real online feature later
+            />
             <div className="messages-area" onScroll={handleScroll} ref={scrollRef}>
                 {messages.length > 0 ? (
                     messages.map((msg) => (
@@ -142,21 +165,43 @@ const ChatWindow = ({ socket, toUserID }: { socket: Socket, toUserID: string }) 
                     <button className="input-action-btn" type="button">
                         <FiPaperclip size={20} />
                     </button>
-                    <input
-                        type="text"
+                    <textarea
+                        ref={textareaRef}
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         placeholder="Type a message..."
                         className="message-input"
-                        onKeyPress={(e) => e.key === "Enter" && handleSend()}
+                        onKeyDown={handleKeyDown}
+                        rows={1}
                     />
-                    <button className="input-action-btn" type="button">
-                        <FiSmile size={20} />
+                    <div className="emoji-container">
+                        {showEmojiPicker && (
+                            <div className="emoji-picker-mini">
+                                {commonEmojis.map(emoji => (
+                                    <button
+                                        key={emoji}
+                                        type="button"
+                                        onClick={() => insertEmoji(emoji)}
+                                        className="emoji-item"
+                                    >
+                                        {emoji}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+                        <button
+                            className="input-action-btn"
+                            type="button"
+                            onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                        >
+                            <FiSmile size={20} />
+                        </button>
+                    </div>
+                    <button className="send-btn" onClick={handleSend} type="button">
+                        <FiSend size={20} />
                     </button>
                 </div>
-                <button className="send-btn" onClick={handleSend} type="button">
-                    <FiSend size={20} />
-                </button>
+
             </footer>
         </div>
     );

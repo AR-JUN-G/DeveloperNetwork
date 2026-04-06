@@ -72,3 +72,16 @@
   color: var(--text-secondary);
   font-style: italic;
 }
+
+
+.start-chatButton {
+  background-color: var(--accent-color); 
+  color: var(--text-primary);
+  border:none;
+  padding: 16px 20px;
+  font-size: 16px;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 10px;
+}

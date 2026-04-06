@@ -4,32 +4,20 @@ import { RootState } from "../../../Store/store";
 import "./ChatSideBar.css";
 import { useEffect, useState } from "react";
 import { directChatResponseType } from "../../../Types/ChatAPI.types";
-import { getChatList } from "../../../API/ChatAPI";
 import formatChatTime from "../../../utils/FormatDate";
 import { Socket } from "socket.io-client";
 import { useParams, useNavigate } from "react-router";
 
-const ChatSideBar = ({ socket }: { socket: Socket }) => {
+interface ChatSideBarProps {
+    socket: Socket;
+    chatList: directChatResponseType[];
+}
+
+const ChatSideBar = ({ socket, chatList }: ChatSideBarProps) => {
     const navigate = useNavigate();
     const { toUserID: activeChatID } = useParams();
 
     const user = useSelector((state: RootState) => state.User);
-    const [chatList, setChatList] = useState<directChatResponseType[]>([]);
-
-    const getUserChatList = async () => {
-        try {
-            const response = await getChatList();
-            if (response.status === 200) {
-                setChatList(response.data?.chats || []);
-            }
-        } catch (error) {
-            console.log(error);
-        }
-    }
-
-    useEffect(() => {
-        getUserChatList();
-    }, []);
 
     const handleChatClick = (chat: directChatResponseType) => {
         const fromUserID = user.userID;
