@@ -28,7 +28,7 @@
 }
 
 .search-input {
-  width: 100%;
+  width: 80%;
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
   border-radius: 12px;

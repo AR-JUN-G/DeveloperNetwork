@@ -15,8 +15,8 @@ Chatting Platform Called as Connect or Connectify
 
 Need to complete within this Week:
     Updated Flow:
-        1. Online OffLine feature
-        2. Request Feature
+        1. Online OffLine feature (done)
+        2. Request Feature 
         3. Search Users (in chat page)
         4. Profile Page (User can edit and Update Profile)
         5. Note: Every User should have uniqueName to signup -> Which help to identify them

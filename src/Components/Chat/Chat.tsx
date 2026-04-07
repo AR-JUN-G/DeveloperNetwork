@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { io } from "socket.io-client";
 import ChatWindow from "./ChatWindow/ChatWindow";
 import ChatSideBar from "./ChatSideBar/ChatSideBar";
@@ -8,13 +8,23 @@ import { availableMemberResponseType, directChatResponseType } from "../../Types
 import { getAvailableMemebersForChat, getChatList } from "../../API/ChatAPI";
 import { motion } from "motion/react";
 import FriendListPopup from "../FriendListPopup/FriendList";
-const socket = io("http://localhost:7777");
+import { useSelector } from "react-redux";
+import { RootState } from "../../Store/store";
 
 const Chat = () => {
+    const user = useSelector((state: RootState) => state.User);
+
+    // Connect to socket once and memoize the connection
+    const socket = useMemo(() => {
+        return io("http://localhost:7777", {
+            query: { userID: user.userID }
+        });
+    }, [user.userID]);
     const { toUserID } = useParams();
     const [renderFriendListPopup, setRenderFriendListPopup] = useState<boolean>(false);
     const [chatList, setChatList] = useState<directChatResponseType[]>([]);
     const [friendList, setFriendList] = useState<availableMemberResponseType[]>([]);
+    const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
 
     const getUserChatList = async () => {
         try {
@@ -51,22 +61,25 @@ const Chat = () => {
         chatList.find(chat => chat.userID === toUserID) ||
         friendList.find(friend => friend._id === toUserID);
 
-    console.log(selectedUser, "Arjun");
     useEffect(() => {
         socket.on("connect", () => {
             console.log("Connected with Backend Successfully", socket.id);
         });
 
+        socket.on("getOnlineUser", (users: string[]) => {
+            setOnlineUsers(users);
+        });
+
         return () => {
-            socket.off("connect");
+            socket.off("getOnlineUser");
         }
-    }, []);
+    }, [socket])
 
     return (
         <div className="chat-container">
-            <ChatSideBar socket={socket} chatList={chatList} />
+            <ChatSideBar socket={socket} chatList={chatList} onlineUsers={onlineUsers} />
             {toUserID ? (
-                <ChatWindow socket={socket} toUserID={toUserID} selectedUser={selectedUser} />
+                <ChatWindow socket={socket} toUserID={toUserID} selectedUser={selectedUser} onlineUsers={onlineUsers} />
             ) : (
                 <div className="chat-placeholder">
                     <div className="placeholder-content">
