@@ -7,10 +7,12 @@ import Home from "./Components/Home/Home";
 import ProtectedRoute from "./Components/Auth/ProtectedRoute";
 import AppLayout from "./Components/AppLayout/AppLayout";
 import Activity from "./Components/Activity/Activity";
+import Profile from "./Components/Profile/Profile";
+import { SocketProvider } from "./Context/SocketProvider";
 
 export function App() {
   return (
-    <>
+    <SocketProvider>
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/login" element={<Login />} />
@@ -27,16 +29,12 @@ export function App() {
 
           <Route path="/requests" element={<Activity />} />
 
-          <Route path="/profile" element={
-            <div style={{ padding: '40px', color: '#fff' }}>
-              <h1>Edit Profile</h1>
-              <p>Coming soon: Update your tech stack and personal info.</p>
-            </div>
-          } />
+          <Route path="/profile" element={<Profile />} />
         </Route>
 
+        {/* Catch-all redirect */}
         <Route path="*" element={<Navigate to="/home" replace />} />
       </Routes>
-    </>
+    </SocketProvider>
   );
 }

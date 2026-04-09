@@ -10,4 +10,5 @@ html, body, #root {
 body {
   font-family: 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   color: #ffffff;
+  overflow: hidden; 
 }

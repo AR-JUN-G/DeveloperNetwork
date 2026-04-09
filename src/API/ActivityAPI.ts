@@ -6,7 +6,11 @@
     4. Send Request to the User
 */
 
-import { ReceivedRequestsListResponseType } from "../Types/ActivityAPI.types";
+import { 
+    ReceivedRequestsListResponseType,
+    FeedListResponseType,
+    ActionResponseType
+} from "../Types/ActivityAPI.types";
 import { APIResponseType } from "../Types/CommonAPIResponse.types";
 import { BASE_URL } from "../utils/constants";
 import { APIClient } from "./APIClient";
@@ -27,7 +31,6 @@ const getAllReceivedRequests = async (): Promise<APIResponseType<ReceivedRequest
         }
     } catch (error) {
         const AxiosError = error as AxiosError<{ message: string }>;
-        console.error("Error in getAllReceivedRequests", AxiosError);
         return {
             data: null,
             error: AxiosError.response?.data?.message || "Something went wrong",
@@ -36,4 +39,57 @@ const getAllReceivedRequests = async (): Promise<APIResponseType<ReceivedRequest
     }
 }
 
-export { getAllReceivedRequests };
+const reviewReceivedRequest = async (status: "accepted" | "rejected", requestId: string): Promise<APIResponseType<ActionResponseType>> => {
+    try {
+        const url = `${BASE_URL}/review/${status}/${requestId}`;
+        const { data, status: resStatus } = await APIClient<ActionResponseType>(url, "POST", {});
+
+        return { data, error: null, status: resStatus };
+    } catch (error) {
+        const AxiosError = error as AxiosError<{ message: string }>;
+        return {
+            data: null,
+            error: AxiosError.response?.data?.message || "Review failed",
+            status: AxiosError.response?.status || 500
+        }
+    }
+}
+
+const getFeed = async (): Promise<APIResponseType<FeedListResponseType>> => {
+    try {
+        const url = `${BASE_URL}/feed`;
+        const { data, status } = await APIClient<FeedListResponseType>(url, "GET", {});
+
+        return { data, error: null, status };
+    } catch (error) {
+        const AxiosError = error as AxiosError<{ message: string }>;
+        return {
+            data: null,
+            error: AxiosError.response?.data?.message || "Feed fetch failed",
+            status: AxiosError.response?.status || 500
+        }
+    }
+}
+
+const sendConnectionRequest = async (status: "interested" | "ignored", toUserID: string): Promise<APIResponseType<ActionResponseType>> => {
+    try {
+        const url = `${BASE_URL}/send/${status}/${toUserID}`;
+        const { data, status: resStatus } = await APIClient<ActionResponseType>(url, "POST", {});
+
+        return { data, error: null, status: resStatus };
+    } catch (error) {
+        const AxiosError = error as AxiosError<{ message: string }>;
+        return {
+            data: null,
+            error: AxiosError.response?.data?.message || "Request failed",
+            status: AxiosError.response?.status || 500
+        }
+    }
+}
+
+export {
+    getAllReceivedRequests,
+    reviewReceivedRequest,
+    getFeed,
+    sendConnectionRequest
+};

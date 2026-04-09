@@ -20,6 +20,7 @@ Need to complete within this Week:
         3. Search Users (in chat page)
         4. Profile Page (User can edit and Update Profile)
         5. Note: Every User should have uniqueName to signup -> Which help to identify them
+        6. When user initiate a new Chat to another user I get the message only when i switch from tab to tab(Need to fix)
 
     
     Need to convert web application to native application

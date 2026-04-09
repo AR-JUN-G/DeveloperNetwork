@@ -1,4 +1,5 @@
 type ReceivedRequestType = {
+    _id: string,
     fromUserID: {
         _id: string,
         firstName: string,
@@ -13,5 +14,30 @@ type ReceivedRequestsListResponseType = {
     requests: ReceivedRequestType[]
 }
 
+type FeedUserType = {
+    _id: string,
+    firstName: string,
+    lastName: string,
+    photourl?: string,
+    about?: string,
+    skills?: string[],
+    age?: number,
+    gender?: string
+}
 
-export type { ReceivedRequestType, ReceivedRequestsListResponseType };
+type FeedListResponseType = {
+    message: string,
+    data: FeedUserType[]
+}
+
+type ActionResponseType = {
+    message: string
+}
+
+export type {
+    ReceivedRequestType, 
+    ReceivedRequestsListResponseType, 
+    FeedUserType, 
+    FeedListResponseType,
+    ActionResponseType
+};

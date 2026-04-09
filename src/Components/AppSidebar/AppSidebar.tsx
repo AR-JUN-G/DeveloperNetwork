@@ -4,16 +4,21 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../Store/store";
 import { removeUserDetails } from "../../Store/userSlice";
 import "./AppSidebar.css";
+import { LogoutAPI } from "../../API/AuthAPI";
 
 const AppSidebar = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const user = useSelector((state: RootState) => state.User);
 
-    const handleLogout = () => {
-        // Clear session logic
-        dispatch(removeUserDetails());
-        navigate("/login");
+    const handleLogout = async () => {
+        try {
+            await LogoutAPI();
+            dispatch(removeUserDetails());
+            navigate("/login");
+        } catch (error) {
+            console.error("Logout failed", error);
+        }
     };
 
     return (
@@ -29,7 +34,6 @@ const AppSidebar = () => {
                     <FiHome size={24} />
                     <span className="nav-label">Discover</span>
                 </NavLink>
-                
                 <NavLink to="/direct/inbox" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} title="Messages">
                     <FiMessageSquare size={24} />
                     <span className="nav-label">Messages</span>
@@ -51,11 +55,10 @@ const AppSidebar = () => {
                     <FiLogOut size={24} />
                     <span className="nav-label">Logout</span>
                 </button>
-                
                 <div className="user-mini-avatar" onClick={() => navigate("/profile")}>
-                    <img 
-                        src={user.profilePic || `https://ui-avatars.com/api/?name=${user.firstName}+${user.lastName}&background=333&color=fff`} 
-                        alt="Me" 
+                    <img
+                        src={user.profilePic || `https://ui-avatars.com/api/?name=${user.firstName}+${user.lastName}&background=333&color=fff`}
+                        alt="Me"
                     />
                 </div>
             </div>

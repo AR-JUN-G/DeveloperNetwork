@@ -145,8 +145,9 @@
 /* Base adjustment for main content */
 .layout-content-wrapper {
   margin-left: 80px;
-  min-height: 100vh;
+  height: 100vh;
   width: calc(100% - 80px);
   transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   background: #0a0a0a;
+  overflow-y: auto;
 }

@@ -1,4 +1,135 @@
-.activity-container {
-    padding: 40px;
+.activity-page {
+    padding: 32px;
+    max-width: 800px;
+    margin: 0 auto;
+    min-height: 100vh;
+}
+
+.activity-header {
+    margin-bottom: 32px;
+}
+
+.activity-header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, #fff 0%, #888 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.activity-header p {
+    color: var(--text-secondary);
+}
+
+.requests-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.request-card {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: transform 0.2s, background 0.2s;
+}
+
+.request-card:hover {
+    background: rgba(255, 255, 255, 0.05);
+    transform: translateY(-2px);
+}
+
+.request-user-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.request-avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    object-fit: cover;
+    border: 2px solid rgba(99, 102, 241, 0.2);
+}
+
+.request-details h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.request-details p {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin: 2px 0 0;
+}
+
+.request-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.action-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.accept-btn {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+}
+
+.accept-btn:hover {
+    background: #10b981;
     color: #fff;
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+}
+
+.reject-btn {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+}
+
+.reject-btn:hover {
+    background: #ef4444;
+    color: #fff;
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+}
+
+.empty-state {
+    text-align: center;
+    padding: 80px 40px;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 32px;
+    border: 1px dashed rgba(255, 255, 255, 0.1);
+}
+
+.empty-icon {
+    font-size: 48px;
+    margin-bottom: 20px;
+    display: block;
+}
+
+.empty-state h2 {
+    font-size: 1.5rem;
+    margin-bottom: 12px;
+}
+
+.empty-state p {
+    color: var(--text-secondary);
 }

@@ -1,5 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
-import { io } from "socket.io-client";
+import { useEffect, useState } from "react";
 import ChatWindow from "./ChatWindow/ChatWindow";
 import ChatSideBar from "./ChatSideBar/ChatSideBar";
 import "./Chat.css";
@@ -10,16 +9,11 @@ import { motion } from "motion/react";
 import FriendListPopup from "../FriendListPopup/FriendList";
 import { useSelector } from "react-redux";
 import { RootState } from "../../Store/store";
+import { useSocket } from "../../Context/SocketProvider";
 
 const Chat = () => {
+    const { socket } = useSocket();
     const user = useSelector((state: RootState) => state.User);
-
-    // Connect to socket once and memoize the connection
-    const socket = useMemo(() => {
-        return io("http://localhost:7777", {
-            query: { userID: user.userID }
-        });
-    }, [user.userID]);
     const { toUserID } = useParams();
     const [renderFriendListPopup, setRenderFriendListPopup] = useState<boolean>(false);
     const [chatList, setChatList] = useState<directChatResponseType[]>([]);
@@ -62,6 +56,8 @@ const Chat = () => {
         friendList.find(friend => friend._id === toUserID);
 
     useEffect(() => {
+        if (!socket) return;
+
         socket.on("connect", () => {
             console.log("Connected with Backend Successfully", socket.id);
         });
@@ -71,9 +67,12 @@ const Chat = () => {
         });
 
         return () => {
+            socket.off("connect");
             socket.off("getOnlineUser");
         }
     }, [socket])
+
+    if (!socket) return <div className="loading-spinner-container"><div className="spinner"></div></div>;
 
     return (
         <div className="chat-container">
