@@ -146,7 +146,7 @@ const Signup = () => {
               className="eye-icon-btn"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
             >
-              {showConfirmPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
+              {showConfirmPassword ? <FiEye size={20} /> : <FiEyeOff size={20} />}
             </button>
           </div>
         </div>

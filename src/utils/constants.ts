@@ -1,9 +1,2 @@
-declare var process: any;
-
-export const BASE_URL = (typeof process !== "undefined" && process?.env?.BASE_URL) 
-    ? process.env.BASE_URL 
-    : "http://localhost:7777/api";
-
-export const SOCKET_URL = (typeof process !== "undefined" && process?.env?.SOCKET_URL) 
-    ? process.env.SOCKET_URL 
-    : "http://localhost:7777";
+export const BASE_URL = location.hostname === "localhost" ? "http://localhost:7777/api" : "http://51.21.250.140:7777/api";
+export const SOCKET_URL = location.hostname === "localhost" ? "http://localhost:7777" : "http://51.21.250.140:7777";
