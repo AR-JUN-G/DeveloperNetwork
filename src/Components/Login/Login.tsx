@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "motion/react";
 import "./Login.css";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { useDispatch } from "react-redux";
 import { updateUserDetails } from "../../Store/userSlice";
@@ -121,6 +121,11 @@ const Login = () => {
         >
           Login
         </motion.button>
+
+        <motion.div className="signup-link">
+          <p>Don't have an account?</p>
+          <Link to="/signup">Register</Link>
+        </motion.div>
       </form>
     </div>
   );

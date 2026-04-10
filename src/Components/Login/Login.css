@@ -110,3 +110,10 @@
 .eye-icon-btn:hover {
   color: #ccc;
 }
+
+.signup-link{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
