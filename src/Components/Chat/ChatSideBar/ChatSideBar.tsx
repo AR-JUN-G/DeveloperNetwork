@@ -11,9 +11,10 @@ import { useParams, useNavigate } from "react-router";
 interface ChatSideBarProps {
     socket: Socket;
     chatList: directChatResponseType[];
+    onlineUsers: string[];
 }
 
-const ChatSideBar = ({ socket, chatList }: ChatSideBarProps) => {
+const ChatSideBar = ({ socket, chatList, onlineUsers }: ChatSideBarProps) => {
     const navigate = useNavigate();
     const { toUserID: activeChatID } = useParams();
 
@@ -73,8 +74,7 @@ const ChatSideBar = ({ socket, chatList }: ChatSideBarProps) => {
                                 alt={chat.firstName + " " + chat.lastName}
                                 className="chat-avatar"
                             />
-                            {/* Need to Implement Online Feature */}
-                            {/* {chat.online && <div className="status-dot"></div>} */}
+                            {onlineUsers.includes(chat.userID) && <div className="status-dot"></div>}
                         </div>
                         <div className="chat-info">
                             <div className="chat-name-row">
@@ -95,23 +95,6 @@ const ChatSideBar = ({ socket, chatList }: ChatSideBarProps) => {
 
             </div>
 
-            <footer className="sidebar-footer">
-                <div className="user-profile-mini">
-                    <img
-                        src={user.profilePic || `https://ui-avatars.com/api/?name=${user.firstName}+${user.lastName}&background=333&color=fff`}
-                        alt="Profile"
-                        className="chat-avatar"
-                        style={{ width: 40, height: 40 }}
-                    />
-                    <div style={{ display: 'flex', flexDirection: 'column' }}>
-                        <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>{user.firstName} {user.lastName}</span>
-                        <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Online</span>
-                    </div>
-                </div>
-                <button style={{ marginLeft: 'auto', background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
-                    <FiMoreVertical size={20} />
-                </button>
-            </footer>
         </aside>
 
     );

@@ -12,7 +12,7 @@ import { RootState } from "../../../Store/store";
 import formatChatTime from "../../../utils/FormatDate";
 import { availableMemberResponseType, directChatResponseType } from "../../../Types/ChatAPI.types";
 
-const ChatWindow = ({ socket, toUserID, selectedUser }: { socket: Socket, toUserID: string, selectedUser?: directChatResponseType | availableMemberResponseType }) => {
+const ChatWindow = ({ socket, toUserID, selectedUser, onlineUsers }: { socket: Socket, toUserID: string, selectedUser?: directChatResponseType | availableMemberResponseType, onlineUsers: string[] }) => {
     const [input, setInput] = useState("");
     const [page, setPage] = useState<number>(1);
     const [hasMore, setHasMore] = useState<Boolean>(true);
@@ -20,6 +20,7 @@ const ChatWindow = ({ socket, toUserID, selectedUser }: { socket: Socket, toUser
     const user = useSelector((state: RootState) => state.User);
     const scrollRef = useRef<HTMLDivElement>(null);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
+    console.log(onlineUsers, "Arjun");
 
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const commonEmojis = ["😊", "😂", "🥰", "😍", "🥳", "😎", "🤔", "😢", "🔥", "👍", "🙌", "💯", "✨", "❤️", "🎈", "🎉"];
@@ -144,7 +145,7 @@ const ChatWindow = ({ socket, toUserID, selectedUser }: { socket: Socket, toUser
             <ChatHeader
                 name={selectedUser ? `${selectedUser.firstName} ${selectedUser.lastName}` : "Chat User"}
                 avatar={selectedUser?.photourl}
-                online={false} // Implementing real online feature later
+                online={onlineUsers.includes(toUserID)} // Implementing real online feature later
             />
             <div className="messages-area" onScroll={handleScroll} ref={scrollRef}>
                 {messages.length > 0 ? (
