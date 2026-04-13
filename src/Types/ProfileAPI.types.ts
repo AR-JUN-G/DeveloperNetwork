@@ -14,3 +14,8 @@ export type ProfileAPIResponseType = {
     message: string;
     data: ProfileDataType;
 }
+
+export type PresignedUrlResponseType = {
+    uploadUrl: string;
+    publicUrl: string;
+}

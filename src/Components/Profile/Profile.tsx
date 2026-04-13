@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState,useRef } from "react";
 import { useDispatch } from "react-redux";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiSave, FiX, FiCheckCircle } from "react-icons/fi";
 import { ProfileDataType } from "../../Types/ProfileAPI.types";
-import { getProfileAPI, editProfileAPI } from "../../API/ProfileAPI";
+import { getProfileAPI, editProfileAPI, getPresignedUrlAPI, uploadFileToS3API } from "../../API/ProfileAPI";
 import { updateUserDetails } from "../../Store/userSlice";
 import "./Profile.css";
 
@@ -13,7 +13,9 @@ const Profile = () => {
     const [isSaving, setIsSaving] = useState(false);
     const [toast, setToast] = useState<{ message: string, type: 'success' | 'error' } | null>(null);
     const [skillInput, setSkillInput] = useState("");
-    
+    const [isUploadingImage, setIsUploadingImage] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
     const [formData, setFormData] = useState<Partial<ProfileDataType>>({
         firstName: "",
         lastName: "",
@@ -54,7 +56,6 @@ const Profile = () => {
     const handleAddSkill = (e: React.MouseEvent | React.KeyboardEvent) => {
         if ('key' in e && e.key !== 'Enter') return;
         e.preventDefault();
-        
         if (skillInput.trim() && !(formData.skills || []).includes(skillInput.trim())) {
             setFormData(prev => ({
                 ...prev,
@@ -71,15 +72,57 @@ const Profile = () => {
         }));
     };
 
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        try {
+            setIsUploadingImage(true);
+            
+            // 1. Get the secure upload ticket (Presigned URL)
+            const presignedResponse = await getPresignedUrlAPI();
+            if (presignedResponse.status !== 200 || !presignedResponse.data) {
+                throw new Error("Could not get upload URL");
+            }
+
+            const { uploadUrl, publicUrl } = presignedResponse.data;
+
+            // 2. Upload directly to AWS S3
+            const uploadSuccess = await uploadFileToS3API(uploadUrl, file);
+            if (!uploadSuccess) {
+                throw new Error("Failed to upload image to S3");
+            }
+
+            // 3. Update the local form with the new permanent link
+            setFormData(prev => ({
+                ...prev,
+                photourl: publicUrl
+            }));
+            
+            showToast("Image uploaded successfully!", "success");
+        } catch (error) {
+            console.error("Image upload error:", error);
+            showToast("Failed to upload image", "error");
+        } finally {
+            setIsUploadingImage(false);
+            if (fileInputRef.current) {
+                fileInputRef.current.value = ""; // Reset input
+            }
+        }
+    };
+
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
             setIsSaving(true);
-            const response = await editProfileAPI(formData);
-            
+
+            // Omit fields that shouldn't be edited via PATCH
+            const { _id, emailId, ...editableData } = formData;
+
+            const response = await editProfileAPI(editableData);
+
             if (response.status === 200 && response.data) {
                 showToast("Profile updated successfully", "success");
-                
                 // Update Redux state so the sidebar and other components immediately pick up the changes
                 dispatch(updateUserDetails({
                     userID: response.data.data._id,
@@ -119,7 +162,7 @@ const Profile = () => {
                 </motion.p>
             </header>
 
-            <motion.form 
+            <motion.form
                 className="profile-card"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -127,11 +170,29 @@ const Profile = () => {
                 onSubmit={handleSave}
             >
                 <div className="profile-top-section">
-                    <div className="profile-avatar-container">
-                        <img 
-                            src={formData.photourl || `https://ui-avatars.com/api/?name=${formData.firstName}+${formData.lastName}&background=6366f1&color=fff&size=256`} 
-                            alt="Profile" 
+                    <div 
+                        className={`profile-avatar-container ${isUploadingImage ? 'uploading' : ''}`}
+                        onClick={() => !isUploadingImage && fileInputRef.current?.click()}
+                        title="Click to change profile picture"
+                    >
+                        <img
+                            src={formData.photourl || `https://ui-avatars.com/api/?name=${formData.firstName}+${formData.lastName}&background=6366f1&color=fff&size=256`}
+                            alt="Profile"
                             className="profile-avatar"
+                        />
+                        <div className="avatar-overlay">
+                            {isUploadingImage ? (
+                                <div className="spinner-small"></div>
+                            ) : (
+                                <span>Change Photo</span>
+                            )}
+                        </div>
+                        <input 
+                            type="file" 
+                            accept="image/*" 
+                            ref={fileInputRef}
+                            style={{ display: 'none' }}
+                            onChange={handleImageUpload}
                         />
                     </div>
                     <div className="profile-info">
@@ -143,34 +204,34 @@ const Profile = () => {
                 <div className="form-grid">
                     <div className="form-group">
                         <label>First Name</label>
-                        <input 
-                            type="text" 
-                            name="firstName" 
-                            value={formData.firstName || ""} 
-                            onChange={handleInputChange} 
+                        <input
+                            type="text"
+                            name="firstName"
+                            value={formData.firstName || ""}
+                            onChange={handleInputChange}
                             className="form-input"
                             required
                         />
                     </div>
-                    
+
                     <div className="form-group">
                         <label>Last Name</label>
-                        <input 
-                            type="text" 
-                            name="lastName" 
-                            value={formData.lastName || ""} 
-                            onChange={handleInputChange} 
+                        <input
+                            type="text"
+                            name="lastName"
+                            value={formData.lastName || ""}
+                            onChange={handleInputChange}
                             className="form-input"
                         />
                     </div>
 
                     <div className="form-group">
                         <label>Age</label>
-                        <input 
-                            type="number" 
-                            name="age" 
-                            value={formData.age || ""} 
-                            onChange={handleInputChange} 
+                        <input
+                            type="number"
+                            name="age"
+                            value={formData.age || ""}
+                            onChange={handleInputChange}
                             className="form-input"
                             min="18"
                             max="120"
@@ -179,10 +240,10 @@ const Profile = () => {
 
                     <div className="form-group">
                         <label>Gender</label>
-                        <select 
-                            name="gender" 
-                            value={formData.gender || ""} 
-                            onChange={handleInputChange} 
+                        <select
+                            name="gender"
+                            value={formData.gender || ""}
+                            onChange={handleInputChange}
                             className="form-select"
                         >
                             <option value="">Select Gender</option>
@@ -193,23 +254,11 @@ const Profile = () => {
                     </div>
 
                     <div className="form-group full-width">
-                        <label>Photo URL</label>
-                        <input 
-                            type="url" 
-                            name="photourl" 
-                            value={formData.photourl || ""} 
-                            onChange={handleInputChange} 
-                            className="form-input"
-                            placeholder="https://example.com/photo.jpg"
-                        />
-                    </div>
-
-                    <div className="form-group full-width">
                         <label>About Me</label>
-                        <textarea 
-                            name="about" 
-                            value={formData.about || ""} 
-                            onChange={handleInputChange} 
+                        <textarea
+                            name="about"
+                            value={formData.about || ""}
+                            onChange={handleInputChange}
                             className="form-textarea"
                             placeholder="Tell other developers about yourself..."
                             maxLength={500}
@@ -220,9 +269,9 @@ const Profile = () => {
                         <label>Skills</label>
                         <div className="skills-container">
                             <div className="skills-input-wrapper">
-                                <input 
-                                    type="text" 
-                                    value={skillInput} 
+                                <input
+                                    type="text"
+                                    value={skillInput}
                                     onChange={(e) => setSkillInput(e.target.value)}
                                     onKeyDown={handleAddSkill}
                                     className="form-input"
@@ -235,7 +284,7 @@ const Profile = () => {
                             <div className="skills-list">
                                 <AnimatePresence>
                                     {(formData.skills || []).map((skill) => (
-                                        <motion.div 
+                                        <motion.div
                                             key={skill}
                                             initial={{ opacity: 0, scale: 0.8 }}
                                             animate={{ opacity: 1, scale: 1 }}
@@ -243,8 +292,8 @@ const Profile = () => {
                                             className="skill-tag"
                                         >
                                             {skill}
-                                            <span 
-                                                className="remove-skill" 
+                                            <span
+                                                className="remove-skill"
                                                 onClick={() => handleRemoveSkill(skill)}
                                             >
                                                 <FiX size={14} />
@@ -270,7 +319,7 @@ const Profile = () => {
 
             <AnimatePresence>
                 {toast && (
-                    <motion.div 
+                    <motion.div
                         className={`profile-toast toast-${toast.type}`}
                         initial={{ opacity: 0, y: 50, scale: 0.3 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
