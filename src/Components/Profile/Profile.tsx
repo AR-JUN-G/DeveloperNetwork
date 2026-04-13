@@ -78,9 +78,9 @@ const Profile = () => {
 
         try {
             setIsUploadingImage(true);
-            
+
             // 1. Get the secure upload ticket (Presigned URL)
-            const presignedResponse = await getPresignedUrlAPI();
+            const presignedResponse = await getPresignedUrlAPI(file.type, file.name.split(".")[1]);
             if (presignedResponse.status !== 200 || !presignedResponse.data) {
                 throw new Error("Could not get upload URL");
             }
@@ -98,7 +98,7 @@ const Profile = () => {
                 ...prev,
                 photourl: publicUrl
             }));
-            
+
             showToast("Image uploaded successfully!", "success");
         } catch (error) {
             console.error("Image upload error:", error);
@@ -170,7 +170,7 @@ const Profile = () => {
                 onSubmit={handleSave}
             >
                 <div className="profile-top-section">
-                    <div 
+                    <div
                         className={`profile-avatar-container ${isUploadingImage ? 'uploading' : ''}`}
                         onClick={() => !isUploadingImage && fileInputRef.current?.click()}
                         title="Click to change profile picture"
@@ -187,9 +187,9 @@ const Profile = () => {
                                 <span>Change Photo</span>
                             )}
                         </div>
-                        <input 
-                            type="file" 
-                            accept="image/jpeg, image/jpg" 
+                        <input
+                            type="file"
+                            accept="image/jpeg, image/jpg"
                             ref={fileInputRef}
                             style={{ display: 'none' }}
                             onChange={handleImageUpload}

@@ -36,10 +36,10 @@ const editProfileAPI = async (profileData: Partial<ProfileDataType>): Promise<AP
     }
 }
 
-const getPresignedUrlAPI = async (): Promise<APIResponseType<PresignedUrlResponseType>> => {
+const getPresignedUrlAPI = async (fileType: string, fileExtension: string): Promise<APIResponseType<PresignedUrlResponseType>> => {
     try {
         const url = `${BASE_URL}/upload-url`;
-        const { data, status } = await APIClient<PresignedUrlResponseType>(url, "GET", {});
+        const { data, status } = await APIClient<PresignedUrlResponseType>(url, "GET", {}, { fileType, fileExtension });
 
         return { data, error: null, status };
     } catch (error) {
