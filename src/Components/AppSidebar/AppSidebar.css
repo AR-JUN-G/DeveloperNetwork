@@ -159,17 +159,22 @@
 @media (max-width: 768px) {
   .main-app-layout {
     flex-direction: column;
+    height: 100vh;
+    height: 100dvh; /* Dynamic viewport height for modern browsers */
+    overflow: hidden;
   }
 
   .app-sidebar {
     width: 100%;
     height: 65px;
+    min-height: 65px;
+    flex-shrink: 0;
     flex-direction: row;
-    position: static; /* No longer floating */
+    position: relative;
     padding: 0 20px;
     border-top: 1px solid rgba(255, 255, 255, 0.05);
-    background: rgba(17, 17, 17, 0.95);
-    z-index: 1000;
+    background: rgba(17, 17, 17, 0.98);
+    z-index: 1001;
     box-sizing: border-box;
     justify-content: space-between;
     align-items: center;
@@ -191,7 +196,8 @@
     align-items: center;
     height: 100%;
     margin: 0;
-    gap: 12vw; 
+    gap: 12vw;
+    flex: 1; /* Nav takes center space */
   }
 
   .nav-item {
@@ -226,6 +232,7 @@
     width: auto;
     align-items: center;
     height: 100%;
+    flex-shrink: 0;
   }
 
   .logout-btn .nav-label {
@@ -246,8 +253,11 @@
   .layout-content-wrapper {
     margin-left: 0;
     width: 100%;
-    padding-bottom: 0; /* No longer needed as it's a flex peer, not overlapping */
+    padding-bottom: 0; 
     order: 1;
     flex: 1;
+    height: auto;
+    overflow-y: auto;
+    background: #0a0a0a;
   }
 }
