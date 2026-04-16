@@ -23,6 +23,7 @@
 @media (max-width: 768px) {
   .chat-container {
     flex-direction: column;
+    height: calc(100% - 65px);
   }
   
   .chat-container.chat-active .chat-sidebar {
