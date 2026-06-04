@@ -130,6 +130,28 @@ const Login = () => {
           Login
         </motion.button>
 
+        <div className="login-divider">
+          <span>or</span>
+        </div>
+
+        <motion.button
+          type="button"
+          onClick={() => navigate("/otp-login")}
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.97 }}
+          transition={{ type: "spring", stiffness: 400, damping: 17 }}
+          className="login-button otp-btn"
+          style={{
+            backgroundColor: "transparent",
+            color: "#fff",
+            border: "1px solid #333",
+            marginTop: "0px",
+            boxShadow: "none"
+          }}
+        >
+          Login with OTP
+        </motion.button>
+
         <motion.div className="signup-link">
           <p>Don't have an account?</p>
           <Link to="/signup">Register</Link>

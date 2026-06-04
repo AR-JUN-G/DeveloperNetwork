@@ -3,6 +3,7 @@ import "./App.css";
 import Login from "./Components/Login/Login";
 import Signup from "./Components/Signup/Signup";
 import Chat from "./Components/Chat/Chat";
+import OTPLogin from "./Components/OTPLogin/OTPLogin";
 import Home from "./Components/Home/Home";
 import ProtectedRoute from "./Components/Auth/ProtectedRoute";
 import AppLayout from "./Components/AppLayout/AppLayout";
@@ -17,6 +18,7 @@ export function App() {
         <Route path="/" element={<Login />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/otp-login" element={<OTPLogin />} />
 
         <Route element={
           <ProtectedRoute>
