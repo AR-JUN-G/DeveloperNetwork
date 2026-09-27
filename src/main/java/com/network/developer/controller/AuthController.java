@@ -1,6 +1,9 @@
 package com.network.developer.controller;
 
 
+import com.network.developer.dto.auth.AuthenticationRequest;
+import com.network.developer.dto.auth.AuthenticationResponse;
+import com.network.developer.dto.auth.RegisterRequest;
 import com.network.developer.service.AuthenticationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

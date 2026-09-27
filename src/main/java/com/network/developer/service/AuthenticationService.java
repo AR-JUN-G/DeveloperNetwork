@@ -1,12 +1,12 @@
 package com.network.developer.service;
 
-import com.network.developer.config.JwtService;
-import com.network.developer.controller.AuthenticationRequest;
-import com.network.developer.controller.AuthenticationResponse;
-import com.network.developer.controller.RegisterRequest;
+import com.network.developer.dto.auth.AuthenticationRequest;
+import com.network.developer.dto.auth.AuthenticationResponse;
+import com.network.developer.dto.auth.RegisterRequest;
 import com.network.developer.entity.Role;
 import com.network.developer.entity.User; // 1. Fixed Import to your custom Entity
 import com.network.developer.repository.UserRepository;
+import com.network.developer.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
