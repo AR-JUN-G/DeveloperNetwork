@@ -19,14 +19,34 @@ public class JwtService {
 
     private static final String SECRET_KEY = "F67NTeDCnj9CdFIqdW9gSablDC8M5WX5lSIWUEmPhptjKWvXJ96yTh6WU9ljxmQC3PYJnOQ07uPyNwODGAzus9";
 
+    // Uses Decode to decode the secret based on the encoded type and after getting the key byte return the secret
+    private Key getSigninKey() {
+        byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
+        return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    // Get the content of the body from the token return the entire body
+    private Claims extractAllClaims(String token) {
+        return Jwts
+                .parserBuilder()
+                .setSigningKey(getSigninKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
+    /*Return only the Claimed Functionality Example if userName is asked return the username and vice versa*/
+    public <T> T extractClaim(String token, Function<Claims, T> claimsTFunction) {
+        final Claims claims = extractAllClaims(token);
+        return claimsTFunction.apply(claims);
+    }
+
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
-    /*Need to understand this function*/
-    public <T> T extractClaim(String token, Function<Claims, T> claimsTFunction) {
-        final Claims claims = extractAllClaims(token);
-        return claimsTFunction.apply(claims);
+    private Date extractExpiration(String token) {
+        return extractClaim(token, Claims::getExpiration);
     }
 
     public String generateToken(UserDetails userDetails) {
@@ -53,24 +73,6 @@ public class JwtService {
         return extractExpiration(token).before(new Date());
     }
 
-    private Date extractExpiration(String token) {
-        return extractClaim(token, Claims::getExpiration);
-    }
-
-
-    private Claims extractAllClaims(String token) {
-        return Jwts
-                .parserBuilder()
-                .setSigningKey(getSigninKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-    }
-
-    private Key getSigninKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
-        return Keys.hmacShaKeyFor(keyBytes);
-    }
 }
 
 
