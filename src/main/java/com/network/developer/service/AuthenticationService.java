@@ -62,7 +62,7 @@ public class AuthenticationService {
                 orElseThrow(() -> new UsernameNotFoundException("User not found: " + request.getEmail()));
 
         var jwtToken = jwtService.generateToken(user);
-        
+
         return AuthenticationResponse.builder()
                 .status(HttpStatus.OK.value())
                 .message("Authentication success")
