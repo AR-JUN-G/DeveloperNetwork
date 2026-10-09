@@ -1,4 +1,5 @@
 package com.network.developer.exception;
+
 import com.network.developer.dto.error.ErrorResponse;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,7 +23,7 @@ public class GlobalExceptionHandler {
         ErrorResponse error = ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.UNAUTHORIZED.value())
-                .message("Invalid Username or password")
+                .message(ex.getMessage())
                 .path(request.getRequestURI())
                 .build();
 
@@ -30,9 +31,10 @@ public class GlobalExceptionHandler {
     }
 
 
-    @ExceptionHandler(UserAlreadyExistsException.class)
+    @ExceptionHandler({UserAlreadyExistsException.class,
+    IllegalStateException.class})
     public ResponseEntity<ErrorResponse> handleUserAlreadyExists(
-            UserAlreadyExistsException ex,
+            RuntimeException  ex,
             HttpServletRequest request
     ) {
         ErrorResponse error = ErrorResponse.builder()
@@ -60,8 +62,23 @@ public class GlobalExceptionHandler {
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.BAD_REQUEST.value())
                 .error("Validation Failed")
-                .message("Input validation failed for one or more fields")
+                .message(ex.getMessage())
                 .validationErrors(errors)
+                .path(request.getRequestURI())
+                .build();
+
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalArgumentExceptions(
+            IllegalArgumentException ex,
+            HttpServletRequest request
+    ) {
+        ErrorResponse error = ErrorResponse.builder()
+                .status(HttpStatus.BAD_REQUEST.value())
+                .error("Bad Request")
+                .message(ex.getMessage())
                 .path(request.getRequestURI())
                 .build();
 
@@ -77,7 +94,7 @@ public class GlobalExceptionHandler {
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
                 .error("Internal Server Error")
-                .message("An unexpected error occurred")
+                .message(ex.getMessage())
                 .path(request.getRequestURI())
                 .build();
 

@@ -21,7 +21,9 @@ public class ConnectionController {
 
 
     @PostMapping("/send/{receiverId}")
-    public ResponseEntity<SendConnectionRequestResponse> sendRequest(@PathVariable Long receiverId, @AuthenticationPrincipal User currentUser) {
+    public ResponseEntity<SendConnectionRequestResponse> sendRequest(
+            @PathVariable Long receiverId,
+            @AuthenticationPrincipal User currentUser) {
         return ResponseEntity.ok(connectionService.sendRequest(currentUser, receiverId));
     }
 
