@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-public class SendMessagePayload {
+public class ChatMessageRequest {
     @NotNull
     private Long receiverId;
     @NotBlank

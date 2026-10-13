@@ -12,8 +12,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ChatMessageDto {
+public class ChatMessageResponse {
     private Long id;
+    private Long senderId;
     private Long receiverId;
     private String content;
     private LocalDateTime createdAt;

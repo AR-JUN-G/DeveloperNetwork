@@ -29,6 +29,7 @@ public class SecurityConfig {
                 // 2. Modern lambda style for request authorization
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/auth/**").permitAll()
+                        .requestMatchers("/ws/**", "/ws-native").permitAll()
                         .anyRequest().authenticated()
                 )
 

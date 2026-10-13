@@ -17,6 +17,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     private final WebsocketAuthInterceptor authInterceptor;
 
+    @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         // In-memory broker prefix for subscriptions
         registry.enableSimpleBroker("/queue", "/topic");
@@ -31,6 +32,10 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.addEndpoint("/ws")
                 .setAllowedOrigins("*")
                 .withSockJS();
+
+        //For postman
+        registry.addEndpoint("/ws-native")
+                .setAllowedOriginPatterns("*");
     }
 
     @Override
@@ -38,3 +43,4 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registration.interceptors(authInterceptor);
     }
 }
+

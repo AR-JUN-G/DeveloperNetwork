@@ -57,7 +57,7 @@ public class ConnectionService {
                 .message("Request Send Successfully")
                 .build();
     }
-
+ 
     @Transactional(readOnly = true)
     public List<UserCardResponse> getSuggestionFeed(User currentUser, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -68,6 +68,7 @@ public class ConnectionService {
                 .id(user.getId())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
+                .profileImageUrl(user.getProfileImageUrl())
                 .build()
         ).toList();
     }
