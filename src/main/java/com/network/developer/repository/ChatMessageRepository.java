@@ -8,13 +8,48 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 @Repository
 public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> {
     @Query("""
-                    SELECT m from ChatMessage m
-                    WHERE (m.sender.id=:userAId AND m.receiver.id=:userBId)
-                    OR(m.sender.id = :userBId AND m.receiver.id = :userAId)
-                    ORDER BY m.createdAt ASC
+            SELECT m FROM ChatMessage m
+            WHERE (
+                (m.sender.id = :userAId AND m.receiver.id = :userBId)
+                OR
+                (m.sender.id = :userBId AND m.receiver.id = :userAId)
+            )
+            AND (
+                m.createdAt < :lastSeenTime
+                OR (
+                    m.createdAt = :lastSeenTime
+                    AND m.id < :lastSeenId
+                )
+            )
+            ORDER BY m.createdAt DESC, m.id DESC
             """)
-    Page<ChatMessage> findChatHistory(@Param("userAId") Long userAId, @Param("userBId") Long userBId, Pageable page);
+    List<ChatMessage> findOlderMessages(
+            @Param("userAId") Long userAId,
+            @Param("userBId") Long userBId,
+            @Param("lastSeenTime") LocalDateTime lastSeenTime,
+            @Param("lastSeenId") Long lastSeenId,
+            Pageable pageable
+    );
+
+
+    @Query("""
+            SELECT m FROM ChatMessage m
+            WHERE (
+                (m.sender.id = :userAId AND m.receiver.id = :userBId)
+                OR
+                (m.sender.id = :userBId AND m.receiver.id = :userAId)
+            )
+            ORDER BY m.createdAt DESC, m.id DESC
+            """)
+    List<ChatMessage> findLatestMessages(
+            @Param("userAId") Long userAId,
+            @Param("userBId") Long userBId,
+            Pageable pageable
+    );
 }

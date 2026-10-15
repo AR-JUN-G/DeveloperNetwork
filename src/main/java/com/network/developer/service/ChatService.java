@@ -1,6 +1,7 @@
 package com.network.developer.service;
 
 
+import com.network.developer.dto.chat.ChatHistoryRequest;
 import com.network.developer.dto.chat.ChatMessageRequest;
 import com.network.developer.dto.chat.ChatMessageResponse;
 import com.network.developer.entity.ChatMessage;
@@ -14,7 +15,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -65,10 +68,75 @@ public class ChatService {
 
 
     @Transactional(readOnly = true)
-    public List<ChatMessageResponse> getChatHistory(User currentUser, Long otherUserId, int page, int size) {
-        return chatMessageRepository.findChatHistory(currentUser.getId(), otherUserId, PageRequest.of(page, size))
-                .getContent()
-                .stream()
+    public List<ChatMessageResponse> getOlderMessage(User currentUser, ChatHistoryRequest requestBody, int size) {
+        if (size < 1 || size > 100) {
+            throw new IllegalArgumentException(
+                    "Message size must be between 1 and 100"
+            );
+        }
+
+        Long otherUserId = requestBody.getOtherUserId();
+        LocalDateTime lastSeenTime = requestBody.getLastSeenTime();
+        Long lastSeenId = requestBody.getLastSeenId();
+
+        if (otherUserId == null) {
+            throw new IllegalArgumentException("Receiver Id is required");
+        }
+
+        // Whether the both field should be provided or it should be provided
+        if ((lastSeenTime == null) != (lastSeenId == null)) {
+            throw new IllegalArgumentException("Both cursor fields must be provided together");
+        }
+
+
+        User otherUser = userRepository.findById(otherUserId).orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+
+        boolean isConnected = connectionRequestRepository.findExistingRequest(
+                        currentUser.getId(),
+                        otherUser.getId()
+                )
+                .map(request ->
+                        request.getStatus() == ConnectionRequestStatus.ACCEPTED)
+                .orElse(false);
+
+        if (!isConnected) {
+            throw new IllegalStateException(
+                    "You can only view chat history with accepted connections"
+            );
+        }
+
+        // Always query the newest batch first.
+        PageRequest pageable = PageRequest.of(0, size);
+
+        List<ChatMessage> messages;
+
+        if (lastSeenTime == null) {
+            // Initial request: fetch the latest messages.
+            messages = chatMessageRepository.findLatestMessages(
+                    currentUser.getId(),
+                    otherUserId,
+                    pageable
+            );
+        } else {
+            // Subsequent request: fetch messages older than the cursor.
+            messages = chatMessageRepository.findOlderMessages(
+                    currentUser.getId(),
+                    otherUserId,
+                    lastSeenTime,
+                    lastSeenId,
+                    pageable
+            );
+        }
+
+        // The database returns newest-first.
+        // Return each batch in chronological order.
+        List<ChatMessage> chronologicalMessages =
+                new java.util.ArrayList<>(messages);
+
+        java.util.Collections.reverse(chronologicalMessages);
+
+        return chronologicalMessages.stream()
                 .map(msg -> ChatMessageResponse.builder()
                         .id(msg.getId())
                         .senderId(msg.getSender().getId())

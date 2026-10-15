@@ -15,7 +15,15 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "chat_message")
+@Table(
+        name = "chat_message",
+        indexes = {
+                @Index(
+                        name = "idx_chat_sender_receiver_message",
+                        columnList = "sender_id, receiver_id, created_at"
+                )
+        }
+)
 public class ChatMessage {
 
     @Id

@@ -1,5 +1,6 @@
 package com.network.developer.controller;
 
+import com.network.developer.dto.chat.ChatHistoryRequest;
 import com.network.developer.dto.chat.ChatMessageRequest;
 import com.network.developer.dto.chat.ChatMessageResponse;
 import com.network.developer.entity.User;
@@ -24,14 +25,14 @@ public class ChatController {
         return ResponseEntity.ok(chatService.sendMessage(currentUser, payload));
     }
 
-    @GetMapping("/history/{otherUserId}")
+    @GetMapping("/history")
     public ResponseEntity<List<ChatMessageResponse>> getHistory(
-            @PathVariable Long otherUserId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "30") int size,
-            @AuthenticationPrincipal User currentUser
+            @Valid @RequestBody ChatHistoryRequest requestBody,
+            @AuthenticationPrincipal User currentUser,
+            @RequestParam(defaultValue = "30") int size
+
     ) {
-        return ResponseEntity.ok(chatService.getChatHistory(currentUser, otherUserId, page, size));
+        return ResponseEntity.ok(chatService.getOlderMessage(currentUser, requestBody, size));
     }
 
 }

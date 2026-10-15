@@ -11,9 +11,10 @@ import java.time.LocalDateTime;
 @Table(
         name = "connection_requests",
         uniqueConstraints = {
-                @UniqueConstraint(columnNames = {"sender_id", "receiver_id"}) //-> Responsible for The same sender cannot create another connection request to the same receiver.
-        }
-)
+                @UniqueConstraint(
+                name = "uk_connection_sender_receiver",
+                columnNames = {"sender_id", "receiver_id"}) //-> Responsible for The same sender cannot create another connection request to the same receiver.
+})
 @Data
 @Builder
 @NoArgsConstructor
