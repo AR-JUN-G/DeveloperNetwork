@@ -1,8 +1,8 @@
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/developer_network
-    username: postgres
-    password: 0911
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
   jpa:
     hibernate:
       ddl-auto: update
@@ -16,8 +16,22 @@ spring:
     multipart:
       max-file-size: 5MB
       max-request-size: 7MB
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            client-id: ${GITHUB_CLIENT_ID:${GITHUB_CLIENT_ID}}
+            client-secret: ${GITHUB_CLIENT_SECRET:${GITHUB_CLIENT_SECRET}}
+            scope:
+              -read: user
+              -user: email
 
 cloudinary:
-  cloud-name: Valthukal
-  api-key: Hello
-  api-secret: Hii
+  cloud-name: ${CLOUDINARY_CLOUD_NAME}
+  api-key: ${CLOUDINARY_CLOUD_KEY}
+  api-secret: ${CLOUDINARY_API_SECRET}
+
+app:
+  oauth2:
+    redirect-uri: http://localhost:5173/oauth2/redirect

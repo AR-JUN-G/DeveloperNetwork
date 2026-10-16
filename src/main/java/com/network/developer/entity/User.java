@@ -20,6 +20,14 @@ import java.util.List;
 @Table(name = "_user")
 public class User implements UserDetails {
 
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    @Column(nullable = false)
+    private AuthProvider provider = AuthProvider.LOCAL;
+
+    @Column(name = "provider_id")
+    private String providerId;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -34,7 +42,7 @@ public class User implements UserDetails {
     @Column(name = "email")
     private String email;
 
-    @Column(name = "password")
+    @Column(name = "password", nullable = true)
     private String password;
 
     @Column(name = "role")
@@ -42,8 +50,8 @@ public class User implements UserDetails {
     private Role role;
 
     @Builder.Default
-    @Column(name="profile_image_url")
-    private String profileImageUrl="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png";
+    @Column(name = "profile_image_url")
+    private String profileImageUrl = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png";
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
