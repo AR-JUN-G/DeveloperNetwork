@@ -35,3 +35,5 @@ cloudinary:
 app:
   oauth2:
     redirect-uri: http://localhost:5173/oauth2/redirect
+  jwt:
+    secret-key: ${APP_SECRET_KEY}
