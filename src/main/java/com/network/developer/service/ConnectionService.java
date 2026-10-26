@@ -78,9 +78,10 @@ public class ConnectionService {
     public List<UserCardResponse> getReceivedRequests(User currentUser) {
         List<ConnectionRequest> requests = connectionRequestRepository.findAllByReceiverIdAndStatus(currentUser.getId(), ConnectionRequestStatus.PENDING);
 
+        // Need to update the UserCardResponse -> Here the id represent the request id. But in the getSuggestionFeed the id represents the user id
         return requests.stream().map(
                 req -> UserCardResponse.builder()
-                        .id(req.getSender().getId())
+                        .id(req.getId())
                         .firstName(req.getSender().getFirstName())
                         .lastName(req.getSender().getLastName())
                         .profileImageUrl(req.getSender().getProfileImageUrl())
