@@ -29,7 +29,7 @@ public class AuthController {
     @Value("${jwt.cookie-name:jwt}")
     private String cookieName;
 
-    @Value("${jwt.cookie.secure:false}")
+    @Value("${jwt.cookie.secure:true}")
     private boolean cookieSecure;
 
     @PostMapping("/register")
@@ -59,7 +59,7 @@ public class AuthController {
                 .secure(cookieSecure)
                 .path("/")
                 .maxAge(maxAge)
-                .sameSite("Strict")
+                .sameSite("none")
                 .build();
     }
 }
