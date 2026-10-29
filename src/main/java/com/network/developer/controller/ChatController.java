@@ -27,11 +27,19 @@ public class ChatController {
 
     @GetMapping("/history")
     public ResponseEntity<List<ChatMessageResponse>> getHistory(
-            @Valid @RequestBody ChatHistoryRequest requestBody,
+            @ModelAttribute ChatHistoryRequest queryParams,
+            @RequestBody(required = false) ChatHistoryRequest bodyParams,
             @AuthenticationPrincipal User currentUser,
             @RequestParam(defaultValue = "30") int size
-
     ) {
+        ChatHistoryRequest requestBody = (bodyParams != null && bodyParams.getOtherUserId() != null)
+                ? bodyParams
+                : queryParams;
+
+        if (requestBody == null || requestBody.getOtherUserId() == null) {
+            throw new IllegalArgumentException("Receiver Id is required");
+        }
+
         return ResponseEntity.ok(chatService.getOlderMessage(currentUser, requestBody, size));
     }
 
